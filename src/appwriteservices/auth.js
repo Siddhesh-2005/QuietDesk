@@ -16,12 +16,15 @@ export class AuthService {
   // Send Magic URL
   async sendEmail({ email }) {
     try {
+      
+     
       const result = await this.account.createMagicURLToken({
-        userId: ID.unique(),
-        email: email,
-        url: "http://localhost:5173/auth/callback"
-      });
-      console.log("Magic URL token result:", result);
+        Id:ID.unique() ,// Let Appwrite create a unique ID for new users.
+        email:email,
+        url: "http://localhost:5173/auth/callback" //callback URL
+      }
+        
+      );
       return result;
     } catch (error) {
       console.error("Magic URL error:", error);
@@ -29,34 +32,36 @@ export class AuthService {
     }
   }
 
-  //login method
-  async login({userId,secret}){
+  // Login with the secret from the URL 
+  async loginWithMagicURL({ userId, secret }) {
     try {
-      const session=await this.account.createSession({
-        userId: userId,
-        secret: secret
-      })
-      return session
+      
+      
+      const session = await this.account.createSession({userId, secret});
+      return session;
     } catch (error) {
-      throw error
+      console.error("Failed to create session with magic URL:", error);
+      throw error;
     }
   }
-  //get the currently logged user
-  async getCurrentUser(){
+
+  // Get the currently logged-in user
+  async getCurrentUser() {
     try {
-      const user=await this.account.get()
-      const {email,...restData}=user
-      return restData;
+      return await this.account.get();
     } catch (error) {
-      throw error
+      console.info("No active Appwrite session found. This is expected for guests.");
+      return null;
     }
   }
-  //log out the current user
-  async logout(){
+  
+  // Logout the current user 
+  async logout() {
     try {
       await this.account.deleteSessions();
     } catch (error) {
-      throw error
+      console.error("Appwrite service :: logout :: error", error);
+      throw error;
     }
   }
 }

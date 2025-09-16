@@ -1,46 +1,8 @@
-import React, { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import authService from "../appwriteservices/auth";
-import { useDispatch } from "react-redux";
-import { login } from "../features/auth/authSlice";
+import React from "react";
+// No more hooks for auth logic needed here!
 
 function Home() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const searchToken = searchParams.get("secret");
-  const userId = searchParams.get("userId");
-
-  useEffect(() => {
-    async function handleAuth() {
-      try {
-        let user = await authService.getCurrentUser();
-
-        if (!user && userId && searchToken) {
-          // Try creating a session with magic link
-          await authService.login({ userId, secret: searchToken });
-          user = await authService.getCurrentUser();
-
-
-        }
-
-        if (user) {
-          console.log("Dispatching user to Redux:", user);
-          dispatch(login(user));
-        } else {
-          console.log("No user found, staying on login");
-          navigate("/", { replace: true }); // back to login page
-        }
-      } catch (error) {
-        console.error("Auth error:", error);
-        navigate("/", { replace: true });
-      }
-    }
-
-    handleAuth();
-  }, [userId, searchToken, dispatch, navigate]);
-
+  // All auth logic is now handled by the ProtectedRoute and AuthCallback
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -49,7 +11,7 @@ function Home() {
             Welcome to QuietDesk
           </h1>
           <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-            A place for focused discussions and meaningful conversations.
+            You are successfully logged in. This is a protected page.
           </p>
         </div>
 
