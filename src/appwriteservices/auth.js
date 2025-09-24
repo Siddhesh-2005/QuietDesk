@@ -19,7 +19,7 @@ export class AuthService {
       
      
       const result = await this.account.createMagicURLToken({
-        Id:ID.unique() ,// Let Appwrite create a unique ID for new users.
+        userId:ID.unique() ,// Let Appwrite create a unique ID for new users.
         email:email,
         url: "http://localhost:5173/auth/callback" //callback URL
       }
