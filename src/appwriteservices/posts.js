@@ -38,19 +38,20 @@ class PostsService {
 
       return await this.tables.createRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwriteCollectionIdPosts, // Posts table
+        tableId: conf.appwriteCollectionIdPosts, 
         rowId: ID.unique(),
         data: {
           userId: userId, 
           title: title,
           textContent: textContent,
           status: status,
-          imageField: imageFileId,
+          imageFileId: imageFileId,
           imageUrl: imageUrl,
         },
       });
     } catch (error) {
       console.error("Appwrite service :: createPost :: ", error);
+      console.error("Error details:", error.response);
       throw error;
     }
   }
@@ -101,7 +102,7 @@ class PostsService {
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteCollectionIdPosts,
         queries: [
-          Query.equal("user_id", [userId]),
+          Query.equal("userid", [userId]), // Changed from user_id to userid
           Query.orderDesc("$createdAt"),
         ],
       });
@@ -197,7 +198,7 @@ class PostsService {
     try {
       return await this.tables.deleteRow({
         databaseId: conf.appwriteDatabaseId,
-        tableId: conf.appwritePostsTableId,
+        tableId: conf.appwriteCollectionIdPosts, // Fixed: was appwritePostsTableId
         rowId: postId,
       });
     } catch (error) {

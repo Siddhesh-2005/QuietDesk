@@ -21,41 +21,73 @@ function AddPost() {
   const user = useSelector((state) => state.auth.userData);
 
   const onSubmit = async (data) => {
-   console.log(data);
-   
+    console.log("=== FORM SUBMISSION STARTED ===");
+    console.log("Form data received:", data);
+    console.log("User from Redux:", user);
     
     if (!user?.$id) {
+      console.log("❌ No user ID found");
       alert("You must be logged in to create a post.");
       return;
     }
 
+    console.log("✅ User ID found:", user.$id);
     setLoading(true);
 
     try {
-      await postsService.createPost({
+      console.log("📤 Calling postsService.createPost with:");
+      const postData = {
         userId: user.$id,
         title: data.title,
         textContent: data.content,
         imageFile: data.image?.[0] || null,
-      });
+      };
+      console.log("Post data:", postData);
+      
+      // Add a check to see if postsService exists
+      console.log("postsService:", postsService);
+      console.log("postsService.createPost:", postsService.createPost);
 
+      const result = await postsService.createPost(postData);
+      
+      console.log("✅ Post created successfully:", result);
       alert("✅ Post created successfully!");
       reset();
       setPreview(null);
     } catch (error) {
-      console.error("Error creating post:", error);
-      alert("❌ Failed to create post");
+      console.log("=== ERROR CAUGHT ===");
+      console.error("Full error object:", error);
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      
+      if (error.response) {
+        console.error("Error response:", error.response);
+        console.error("Response status:", error.response.status);
+        console.error("Response data:", error.response.data);
+      }
+      
+      if (error.code) {
+        console.error("Error code:", error.code);
+      }
+      
+      alert(`❌ Failed to create post: ${error.message}`);
     } finally {
+      console.log("=== FORM SUBMISSION ENDED ===");
       setLoading(false);
     }
   };
 
   // handle preview update
   const handleFileChange = (e) => {
+    console.log("File change event:", e.target.files);
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith("image/")) {
+    // && file.type.startsWith("image/")
+    if (file ) {
+      console.log("Setting preview for file:", file.name);
       setPreview(URL.createObjectURL(file));
     } else {
+      console.log("No valid image file selected");
       setPreview(null);
     }
   };
@@ -113,6 +145,13 @@ function AddPost() {
           {loading ? "Posting..." : "Add Post"}
         </Button>
       </form>
+      
+      {/* Debug info */}
+      <div className="mt-4 p-2 bg-gray-100 text-xs rounded">
+        <strong>Debug Info:</strong>
+        <div>User ID: {user?.$id || "Not found"}</div>
+        <div>Posts Service: {postsService ? "Loaded" : "Not loaded"}</div>
+      </div>
     </div>
   );
 }
