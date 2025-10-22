@@ -30,10 +30,25 @@ class PostsService {
         });
 
         imageFileId = upload.$id;
-        imageUrl = this.storage.getFileView({
-          bucketId: conf.appwriteBucketId,
-          fileId: upload.$id,
-        }).href;
+        // getFileView may be async depending on SDK; await it and handle possible shapes
+        try {
+          const fileView = await this.storage.getFileView({
+            bucketId: conf.appwriteBucketId,
+            fileId: upload.$id,
+          });
+
+          // fileView could be an object with `href`, `url`, or a string URL depending on SDK
+          imageUrl = fileView?.href || fileView?.url || fileView;
+
+          // If still not a usable string, construct the Appwrite storage view URL as a fallback
+          if (!imageUrl || typeof imageUrl !== "string") {
+            imageUrl = `${conf.appwriteUrl.replace(/\/$/, "")}/storage/buckets/${conf.appwriteBucketId}/files/${upload.$id}/view?project=${conf.appwriteProjectId}`;
+          }
+        } catch (err) {
+          // If retrieving view URL fails, leave imageUrl null but keep file id
+          console.warn("Could not get file view URL", err);
+          imageUrl = null;
+        }
       }
 
       return await this.tables.createRow({
@@ -45,7 +60,7 @@ class PostsService {
           title: title,
           textContent: textContent,
           status: status,
-          imageField: imageFileId,
+          imageFileId: imageFileId,
           imageUrl: imageUrl,
         },
       });

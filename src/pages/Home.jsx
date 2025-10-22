@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import LogoutBtn from "../components/Header/LogoutBtn";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPosts } from "../features/posts/postsSlice";
-import PostCard from "../components/postCard";
+import PostCard from "../components/PostCard";
 
 function Home() {
   const dispatch=useDispatch()
@@ -27,6 +27,7 @@ function Home() {
             likes={p.likesCount}
             dislikes={p.dislikesCount}
             comments={p.commentsCount}
+            image={p.imageUrl}
           />
         </div>
       ))
