@@ -42,7 +42,12 @@ class PostsService {
 
           // If still not a usable string, construct the Appwrite storage view URL as a fallback
           if (!imageUrl || typeof imageUrl !== "string") {
-            imageUrl = `${conf.appwriteUrl.replace(/\/$/, "")}/storage/buckets/${conf.appwriteBucketId}/files/${upload.$id}/view?project=${conf.appwriteProjectId}`;
+            imageUrl = `${conf.appwriteUrl.replace(
+              /\/$/,
+              ""
+            )}/storage/buckets/${conf.appwriteBucketId}/files/${
+              upload.$id
+            }/view?project=${conf.appwriteProjectId}`;
           }
         } catch (err) {
           // If retrieving view URL fails, leave imageUrl null but keep file id
@@ -56,7 +61,7 @@ class PostsService {
         tableId: conf.appwriteCollectionIdPosts, // Posts table
         rowId: ID.unique(),
         data: {
-          userId: userId, 
+          userId: userId,
           title: title,
           textContent: textContent,
           status: status,
@@ -93,7 +98,6 @@ class PostsService {
       });
       console.log(posts);
 
-      // Since stats are already in the row, just return
       return posts.rows.map((post) => ({
         ...post,
         stats: {
@@ -112,16 +116,28 @@ class PostsService {
   // Get posts of a specific user
   async getUserPosts(userId) {
     try {
-      return await this.tables.listRows({
+      const posts = await this.tables.listRows({
         databaseId: conf.appwriteDatabaseId,
         tableId: conf.appwriteCollectionIdPosts,
         queries: [
-          Query.equal("user_id", [userId]),
+          // use 'userId' to match the field name used when creating rows
+          Query.equal("userId", [userId]),
           Query.orderDesc("$createdAt"),
         ],
       });
+      console.log(posts);
+
+      return posts.rows.map((post) => ({
+        ...post,
+        stats: {
+          likes: post.likesCount || 0,
+          dislikes: post.dislikesCount || 0,
+          commentsCount: post.commentsCount || 0,
+          reportsCount: post.reportsCount || 0,
+        },
+      }));
     } catch (error) {
-      console.error("Appwrite service :: getUserPosts :: ", error);
+      console.error("Appwrite service :: getUserPosts ::", error);
       throw error;
     }
   }

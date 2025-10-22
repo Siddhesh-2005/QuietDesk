@@ -30,12 +30,16 @@ const PostCard = ({
       {/* Title */}
       <div className="text-lg font-bold mt-2">{title}</div>
 
-      {/* Image */}
+      {/* Image - use an <img> so the image scales responsively. */}
       {image && (
-        <div
-          className="w-full h-48 bg-gray-500 rounded-md mt-3 bg-cover bg-center"
-          style={{ backgroundImage: `url(${image})` }}
-        ></div>
+        <div className="w-full mt-3">
+          <img
+            src={image}
+            alt={title || "post image"}
+            className="w-auto max-h-80 rounded-md object-cover"
+            style={{ display: "block" }}
+          />
+        </div>
       )}
 
       {/* Content */}
