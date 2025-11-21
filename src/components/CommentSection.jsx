@@ -27,16 +27,20 @@ function CommentSection({ postId }) {
   }, [postId]);
 
   return (
-    <div>
-      <ul>
-        {comments.length > 0
-          ? comments.map((comment) => (
-              <li key={comment.$id }>
-                {comment.content }
-              </li>
-            ))
-          : null}
-      </ul>
+    <div className="mt-4 p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
+      <h4 className="text-white font-medium mb-3">Comments</h4>
+      <div className="space-y-3">
+        {comments.length > 0 ? (
+          comments.map((comment) => (
+            <div key={comment.$id} className="p-3 bg-white/5 rounded-md border border-white/10">
+              <p className='text-white text-bold'>{comment.userId}</p>
+              <p className="text-gray-200 text-sm">{comment.content}</p>
+            </div>
+          ))
+        ) : (
+          <p className="text-gray-400 text-sm italic">No comments yet</p>
+        )}
+      </div>
     </div>
   );
 }

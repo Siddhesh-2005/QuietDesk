@@ -14,7 +14,7 @@ function Home() {
     
   },[dispatch])
   return (
-    <div className="min-h-screen bg-gray-100 py-6 px-4 sm:px-8 lg:px-16">
+    <div className="min-h-screen pt-24 py-6 px-4 sm:px-8 lg:px-16" style={{backgroundColor: '#1f1f1f'}}>
   <div className="space-y-6">
     {posts.length > 0 ? (
       posts.map((p) => (

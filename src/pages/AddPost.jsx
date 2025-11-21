@@ -62,8 +62,9 @@ function AddPost() {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 border rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-6">Create New Post</h2>
+    <div className="min-h-screen pt-24 py-6 px-4 sm:px-8 lg:px-16" style={{backgroundColor: '#1f1f1f'}}>
+      <div className="w-1/2 mx-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 border border-gray-700/50 rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-6 text-white">Create New Post</h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Title */}
@@ -73,21 +74,21 @@ function AddPost() {
           {...register("title", { required: "Title is required" })}
         />
         {errors.title && (
-          <p className="text-red-500 text-sm">{errors.title.message}</p>
+          <p className="text-red-300 text-sm">{errors.title.message}</p>
         )}
 
         {/* Content */}
         <div className="w-full">
-          <label className="block mb-1 text-sm font-medium">Content</label>
+          <label className="block mb-1 text-sm font-medium text-white">Content</label>
           <textarea
             placeholder="Write your content here..."
             rows={5}
-            className="px-3 py-2 rounded-lg bg-white text-black outline-none focus:bg-gray-50 duration-200 border border-gray-200 w-full"
+            className="px-3 py-2 rounded-lg bg-gray-800/50 text-white placeholder-gray-400 outline-none focus:bg-gray-700/50 duration-200 border border-gray-600/50 w-full backdrop-blur-sm"
             {...register("content", { required: "Content is required" })}
           />
         </div>
         {errors.content && (
-          <p className="text-red-500 text-sm">{errors.content.message}</p>
+          <p className="text-red-300 text-sm">{errors.content.message}</p>
         )}
 
         {/* Image (optional) */}
@@ -118,6 +119,7 @@ function AddPost() {
           {loading ? "Posting..." : "Add Post"}
         </Button>
       </form>
+    </div>
     </div>
   );
 }
