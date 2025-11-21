@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaThumbsUp, FaThumbsDown, FaComment, FaFlag } from "react-icons/fa";
 import postsReactionService from "../appwriteservices/postsReactions";
 import CommentSection from "./CommentSection";
+import { AddComment } from "./AddComment";
 const PostCard = ({
   postId,
   currentUserId,
@@ -84,10 +85,13 @@ const PostCard = ({
 
         <div className="flex flex-col items-center">
           <button
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCommentSection();
+            }}
             className="px-4 py-2 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-200 backdrop-blur-sm border border-white/20">
             {isCommentOpen ? (
-              <span className="text-sm">Add Comment</span>
+              <span className="text-sm">Hide Comments</span>
             ) : (
               <>
                 <FaComment size={14} className="mr-2" />
@@ -101,7 +105,12 @@ const PostCard = ({
 
       {/* Comment Section */}
       <div className="mt-4">
-        {isCommentOpen && <CommentSection postId={postId} />}
+        {isCommentOpen && (
+          <>
+            <AddComment postId={postId} currentUserId={currentUserId} />
+            <CommentSection postId={postId} />
+          </>
+        )}
       </div>
     </div>
 
