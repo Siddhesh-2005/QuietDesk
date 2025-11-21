@@ -15,13 +15,13 @@ function Header() {
   ];
 
   return (
-    <header className="bg-white shadow-lg rounded-xl py-4">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md shadow-lg py-4">
       <div className="container mx-auto px-6">
         <nav className="flex items-center justify-between">
           {/* Logo / Brand */}
           <div className="mr-6">
             <Link to="/home">
-              <h4 className="text-2xl font-bold text-gray-900 tracking-tight">
+              <h4 className="text-2xl font-bold text-gray-100 tracking-tight">
                 Quiet Desk
               </h4>
             </Link>
@@ -35,8 +35,7 @@ function Header() {
                   <li key={item.name}>
                     <button
                       onClick={() => navigate(item.slug)}
-                      className="inline-block px-4 py-2 text-base font-medium text-gray-700
-                                 hover:bg-gray-100 rounded-full transition-colors duration-200"
+                      className="inline-block px-4 py-2 text-base font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 rounded-full transition-colors duration-200"
                     >
                       {item.name}
                     </button>

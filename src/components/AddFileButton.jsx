@@ -21,7 +21,7 @@ function AddFileButton({ label = "Add Image", className = "", ...props }, ref) {
     <div className="w-full">
       <label
         htmlFor={id}
-        className={`flex items-center gap-2 cursor-pointer text-blue-600 hover:underline ${className}`}
+        className={`flex items-center gap-2 cursor-pointer text-white/80 hover:text-white border border-white/30 rounded-lg px-4 py-2 hover:bg-white/10 transition-colors ${className}`}
       >
         📎 {label}
       </label>
@@ -41,7 +41,7 @@ function AddFileButton({ label = "Add Image", className = "", ...props }, ref) {
           <img
             src={preview}
             alt="preview"
-            className="w-full h-full object-cover rounded-lg border"
+            className="w-full h-full object-cover rounded-lg border border-white/30"
           />
         </div>
       )}
