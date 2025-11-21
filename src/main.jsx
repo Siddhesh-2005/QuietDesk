@@ -9,7 +9,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { store } from "./app/store";
 import { Provider } from "react-redux";
-import AddPost from "./pages/AddPost.jsx";
+import MyPosts from "./pages/MyPosts.jsx";
+import AddPost from "./pages/AddPost.jsx"
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,16 @@ const router = createBrowserRouter([
           {
             path: "/addpost",
             element: <AddPost />,
+          },
+        ],
+      },
+
+      {
+        element: <ProtectedRoute authentication={true} />,
+        children: [
+          {
+            path: "/myposts",
+            element: <MyPosts />,
           },
         ],
       },

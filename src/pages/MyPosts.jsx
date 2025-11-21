@@ -1,23 +1,24 @@
 import React, { useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPosts } from "../features/posts/postsSlice";
+import { fetchMyPosts } from "../features/posts/myPostsSlice";
 import PostCard from "../components/PostCard";
 
-function Home() {
+function MyPosts() {
   const dispatch=useDispatch()
-  const posts=useSelector((state)=>state.posts.posts)
+  const myPosts=useSelector((state)=>state.myPosts.myPosts)
   const user=useSelector((state)=>state.auth.userData)
   useEffect(()=>{
-    dispatch(fetchPosts())
-    console.log(user);
+    dispatch(fetchMyPosts())
+    console.log(myPosts);
+    
     
   },[dispatch])
   return (
     <div className="min-h-screen bg-gray-100 py-6 px-4 sm:px-8 lg:px-16">
   <div className="space-y-6">
-    {posts.length > 0 ? (
-      posts.map((p) => (
+    {myPosts.length > 0 ? (
+      myPosts.map((p) => (
         <div key={p.$id}>
           <PostCard
             postId={p.$id}
@@ -42,4 +43,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MyPosts;

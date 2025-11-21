@@ -10,6 +10,7 @@ function AddPost() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
     reset,
   } = useForm();
@@ -92,9 +93,13 @@ function AddPost() {
         {/* Image (optional) */}
         <AddFileButton
           label="Upload Image"
-          {...register("image")}
           onChange={(e) => {
+            // update preview locally
             handleFileChange(e);
+
+            // ensure react-hook-form receives the file list
+            // setValue expects the same shape as register would provide
+            setValue("image", e.target.files, { shouldValidate: true });
           }}
         />
 

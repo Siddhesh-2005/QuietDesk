@@ -183,6 +183,23 @@ class PostsReactionService {
     }
   }
 
+  async getComments(postId){
+    try {
+      const comments = await this.tables.listRows({
+        databaseId: conf.appwriteDatabaseId,
+        tableId: conf.appwriteCollectionIdComments,
+        queries: [
+          Query.equal("postId", [postId]),
+          Query.orderDesc("$createdAt"),
+        ],
+      });
+      return comments;
+    } catch (error) {
+      console.error("Appwrite service :: getComments ::", error);
+      
+    }
+  }
+
   async addReport({ postId, userId }) {
     try {
       // 1. Save report in postReports table

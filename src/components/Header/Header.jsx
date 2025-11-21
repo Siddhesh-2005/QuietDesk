@@ -9,8 +9,9 @@ function Header() {
 
   const navItems = [
     { name: "Home", slug: "/home", active: authStatus },
-    { name: "My Posts", slug: "/myPosts", active: authStatus },
-    { name: "Add Post", slug: "/addpost", active: authStatus }
+    { name: "My Posts", slug: "/myposts", active: authStatus },
+    { name: "Add Post", slug: "/addpost", active: authStatus },
+    
   ];
 
   return (
