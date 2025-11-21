@@ -45,7 +45,7 @@ class PostsService {
           title: title,
           textContent: textContent,
           status: status,
-          imageField: imageFileId,
+          imageFileId: imageFileId,
           imageUrl: imageUrl,
         },
       });
