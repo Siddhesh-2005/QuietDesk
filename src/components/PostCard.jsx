@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaThumbsUp, FaThumbsDown, FaComment, FaFlag } from "react-icons/fa";
 import postsReactionService from "../appwriteservices/postsReactions";
 import CommentSection from "./CommentSection";
+import { AddComment } from "./AddComment";
 const PostCard = ({
   postId,
   currentUserId,
@@ -35,14 +36,20 @@ const PostCard = ({
 
   return (
     <div onClick={handleCommentSection}
-      className="w-1/2 mx-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 border border-gray-700/50 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
+      className="w-1/2 mx-auto bg-blue-600 border border-gray-700/50 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gray-600"></div>
           <span className="font-medium text-gray-200">{name}</span>
         </div>
-        <span className="text-sm text-gray-500">{time}</span>
+        <span className="text-sm text-white">
+          {new Date(time).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          })}
+        </span>
       </div>
 
       {/* Title */}
@@ -60,7 +67,7 @@ const PostCard = ({
       )}
 
       {/* Content */}
-      <div className="mt-3 text-gray-400 text-sm">{content}</div>
+      <div className="mt-3 text-gray-300 text-sm">{content}</div>
 
       {/* Action Buttons with Counters */}
       <div className="flex items-start justify-start gap-6 mt-4">
@@ -84,10 +91,13 @@ const PostCard = ({
 
         <div className="flex flex-col items-center">
           <button
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCommentSection();
+            }}
             className="px-4 py-2 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-200 backdrop-blur-sm border border-white/20">
             {isCommentOpen ? (
-              <span className="text-sm">Add Comment</span>
+              <span className="text-sm">Hide Comments</span>
             ) : (
               <>
                 <FaComment size={14} className="mr-2" />
@@ -101,7 +111,12 @@ const PostCard = ({
 
       {/* Comment Section */}
       <div className="mt-4">
-        {isCommentOpen && <CommentSection postId={postId} />}
+        {isCommentOpen && (
+          <>
+            <AddComment postId={postId} currentUserId={currentUserId} />
+            <CommentSection postId={postId} />
+          </>
+        )}
       </div>
     </div>
 
