@@ -48,6 +48,24 @@ class PostsReactionService {
 
   // Toggle like/dislike reaction
 
+  async getUserReaction(postId, userId) {
+    try {
+      const reaction = await this.tables.listRows({
+        databaseId: conf.appwriteDatabaseId,
+        tableId: conf.appwriteCollectionIdPostReactions,
+        queries: [
+          Query.equal("postId", postId),
+          Query.equal("userId", userId)
+        ],
+      });
+      
+      return reaction.rows.length > 0 ? reaction.rows[0] : null;
+    } catch (error) {
+      console.error("PostsReactionService :: getUserReaction ::", error);
+      throw error;
+    }
+  }
+
   async toggleReaction({ postId, userId, reaction }) {
     try {
       if (!postId || !userId) {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaThumbsUp, FaThumbsDown, FaComment, FaFlag } from "react-icons/fa";
 import postsReactionService from "../appwriteservices/postsReactions";
 import CommentSection from "./CommentSection";
@@ -16,14 +16,69 @@ const PostCard = ({
   comments = 0,
 }) => {
   const [loadingLike, setLoadingLike] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [dynamicCommentCount, setDynamicCommentCount] = useState(comments);
+  const [dynamicLikeCount, setDynamicLikeCount] = useState(likes);
+  const [userHasLiked, setUserHasLiked] = useState(false);
+  const [loadingUserReaction, setLoadingUserReaction] = useState(true);
+
+  // Check if user has already liked this post on component mount
+  useEffect(() => {
+    const checkUserReaction = async () => {
+      if (!currentUserId || !postId) {
+        setLoadingUserReaction(false);
+        return;
+      }
+      
+      try {
+        const res = await postsReactionService.getUserReaction(postId, currentUserId);
+        setUserHasLiked(res?.reaction === 'like');
+      } catch (error) {
+        console.error('Error checking user reaction:', error);
+      } finally {
+        setLoadingUserReaction(false);
+      }
+    };
+    
+    checkUserReaction();
+  }, [postId, currentUserId]);
   const handleLike = async (e) => {
     e.stopPropagation();
-    if (!currentUserId || loadingLike) return;
+    if (!currentUserId || loadingLike || loadingUserReaction) return;
+    
+    // Store current state for rollback
+    const previousLikeState = userHasLiked;
+    const previousLikeCount = dynamicLikeCount;
+    
     try {
       setLoadingLike(true);
-      await postsReactionService.toggleReaction({ postId, userId: currentUserId, reaction: "like" });
+      
+      // Optimistic UI update
+      if (userHasLiked) {
+        setUserHasLiked(false);
+        setDynamicLikeCount(prev => Math.max(prev - 1, 0));
+      } else {
+        setUserHasLiked(true);
+        setDynamicLikeCount(prev => prev + 1);
+      }
+      
+      // Make API call
+      await postsReactionService.toggleReaction({ 
+        postId, 
+        userId: currentUserId, 
+        reaction: "like" 
+      });
+      
     } catch (err) {
       console.error('handleLike failed', err.message || err);
+      
+      // Rollback optimistic updates on error
+      setUserHasLiked(previousLikeState);
+      setDynamicLikeCount(previousLikeCount);
+      
+      // Show error message (optional)
+      // You could add a toast notification here
+      
     } finally {
       setLoadingLike(false);
     }
@@ -33,6 +88,17 @@ const PostCard = ({
   const handleCommentSection = () => {
     setCommentOpen(prev => !prev)
   }
+
+  // Function to refresh comments after adding new one
+  const handleCommentAdded = () => {
+    setRefreshTrigger(prev => prev + 1);
+    setDynamicCommentCount(prev => prev + 1);
+  };
+
+  // Function to update comment count when comments are fetched
+  const handleCommentsLoaded = (commentCount) => {
+    setDynamicCommentCount(commentCount);
+  };
 
   return (
     <div onClick={handleCommentSection}
@@ -74,11 +140,22 @@ const PostCard = ({
         <div className="flex flex-col items-center">
           <button
             onClick={handleLike}
-            disabled={loadingLike}
-            className="px-4 py-2 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-full transition-all duration-200 disabled:opacity-50 backdrop-blur-sm border border-white/20"
+            disabled={loadingLike || loadingUserReaction}
+            className={`px-4 py-2 flex items-center justify-center rounded-full transition-all duration-200 disabled:opacity-50 backdrop-blur-sm border ${
+              userHasLiked 
+                ? 'bg-blue-500/30 hover:bg-blue-500/40 text-blue-300 border-blue-400/50 shadow-lg shadow-blue-500/20' 
+                : 'bg-white/10 hover:bg-white/20 text-white border-white/20'
+            } ${loadingLike ? 'animate-pulse' : ''}`}
           >
-            <FaThumbsUp size={14} className="mr-2" />
-            <span className="text-sm">{likes}</span>
+            <FaThumbsUp 
+              size={14} 
+              className={`mr-2 transition-all duration-200 ${
+                userHasLiked ? 'text-blue-300 drop-shadow-sm' : 'text-white'
+              } ${loadingLike ? 'animate-pulse' : ''}`} 
+            />
+            <span className="text-sm font-medium">
+              {loadingUserReaction ? '...' : dynamicLikeCount}
+            </span>
           </button>
         </div>
 
@@ -101,7 +178,7 @@ const PostCard = ({
             ) : (
               <>
                 <FaComment size={14} className="mr-2" />
-                <span className="text-sm">{comments}</span>
+                <span className="text-sm">{dynamicCommentCount}</span>
               </>
             )}
           </button>
@@ -113,8 +190,16 @@ const PostCard = ({
       <div className="mt-4">
         {isCommentOpen && (
           <>
-            <AddComment postId={postId} currentUserId={currentUserId} />
-            <CommentSection postId={postId} />
+            <AddComment 
+              postId={postId} 
+              currentUserId={currentUserId} 
+              onCommentAdded={handleCommentAdded}
+            />
+            <CommentSection 
+              postId={postId} 
+              refreshTrigger={refreshTrigger}
+              onCommentsLoaded={handleCommentsLoaded}
+            />
           </>
         )}
       </div>

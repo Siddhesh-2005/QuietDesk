@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import postsReactionService from '../appwriteservices/postsReactions';
 
-function CommentSection({ postId }) {
+function CommentSection({ postId, refreshTrigger = 0, onCommentsLoaded }) {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
@@ -11,7 +11,13 @@ function CommentSection({ postId }) {
       try {
         const res = await postsReactionService.getComments(postId);
         const rows = res?.rows || [];
-        if (mounted) setComments(rows);
+        if (mounted) {
+          setComments(rows);
+          // Report the comment count back to parent
+          if (onCommentsLoaded) {
+            onCommentsLoaded(rows.length);
+          }
+        }
         console.log(rows);
         
       } catch (err) {
@@ -24,7 +30,7 @@ function CommentSection({ postId }) {
     return () => {
       mounted = false;
     };
-  }, [postId]);
+  }, [postId, refreshTrigger, onCommentsLoaded]);
 
   return (
     <div className="mt-4 p-4 bg-white/5 rounded-lg backdrop-blur-sm border border-white/10">
