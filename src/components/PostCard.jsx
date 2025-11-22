@@ -36,14 +36,20 @@ const PostCard = ({
 
   return (
     <div onClick={handleCommentSection}
-      className="w-1/2 mx-auto bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 border border-gray-700/50 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
+      className="w-1/2 mx-auto bg-blue-600 border border-gray-700/50 rounded-lg shadow-lg p-6 relative backdrop-blur-sm">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gray-600"></div>
           <span className="font-medium text-gray-200">{name}</span>
         </div>
-        <span className="text-sm text-gray-500">{time}</span>
+        <span className="text-sm text-white">
+          {new Date(time).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+          })}
+        </span>
       </div>
 
       {/* Title */}
@@ -61,7 +67,7 @@ const PostCard = ({
       )}
 
       {/* Content */}
-      <div className="mt-3 text-gray-400 text-sm">{content}</div>
+      <div className="mt-3 text-gray-300 text-sm">{content}</div>
 
       {/* Action Buttons with Counters */}
       <div className="flex items-start justify-start gap-6 mt-4">
